@@ -1,13 +1,15 @@
-provider "aws" {
-  region = "us-east-2"
-}
-
-# Partial configuration. The other settings (e.g. bucket, region) will be passed
-# in from a file via -backend-config arguments to "terraform init"
 terraform {
   backend "s3" {
-      key = "global/s3/terraform.tfstate"
+    bucket         = "terraform-up-and-running-st8"
+    key            = "global/s3/terraform.tfstate"
+    region         = "us-east-2"
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
   }
+}
+
+provider "aws" {
+  region = "us-east-2"
 }
 
 resource "aws_s3_bucket" "terraform_state" {
@@ -26,17 +28,17 @@ resource "aws_s3_bucket" "terraform_state" {
   # Enable server-side encryption by default
   server_side_encryption_configuration {
     rule {
-        apply_server_side_encryption_by_default {
-            sse_algorithm = "AES256"
-        }
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
     }
   }
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name = "terraform-up-and-running-locks"
+  name         = "terraform-up-and-running-locks"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key = "LockID"
+  hash_key     = "LockID"
 
   attribute {
     name = "LockID"
