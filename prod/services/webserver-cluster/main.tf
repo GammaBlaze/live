@@ -19,9 +19,14 @@ module "webserver_cluster" {
   db_remote_state_bucket = "terraform-up-and-running-st8"
   db_remote_state_key    = "prod/data-stores/mysql/terraform.tfstate"
 
-  instance_type = "t2.micro"
+  instance_type = "m4.large"
   min_size      = 2
   max_size      = 10
+
+  custom_tags = {
+    Owner     = "team-foo"
+    ManagedBy = "terraform"
+  }
 }
 
 resource "aws_autoscaling_schedule" "scale_out_during_business_hours" {
