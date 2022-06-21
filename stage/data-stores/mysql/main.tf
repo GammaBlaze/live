@@ -10,18 +10,22 @@ data "aws_secretsmanager_secret_version" "db_password" {
 # in from a file via -backend-config arguments to "terraform init"
 terraform {
   backend "s3" {
-      key = "stage/data-stores/mysql/terraform.tfstate"
+    bucket         = "terraform-up-and-running-st8"
+    region         = "us-east-2"
+    key            = "stage/data-stores/mysql/terraform.tfstate"
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
   }
 }
 
 resource "aws_db_instance" "example" {
   identifier_prefix = "terraform-up-and-running-stage"
-  engine = "mysql"
+  engine            = "mysql"
   allocated_storage = 10
-  instance_class = "db.t2.micro"
-  name = "example_database"
-  username = "admin"
+  instance_class    = "db.t2.micro"
+  name              = "example_database"
+  username          = "admin"
   #password = data.aws_secretsmanager_secret_version.db_password.secret_string
-  password = jsondecode(data.aws_secretsmanager_secret_version.db_password.secret_string)["password"]
+  password            = jsondecode(data.aws_secretsmanager_secret_version.db_password.secret_string)["password"]
   skip_final_snapshot = true
 }
