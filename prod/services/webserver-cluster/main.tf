@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 module "webserver_cluster" {
-  source = "github.com/GammaBlaze/modules//services/webserver-cluster?ref=v0.0.1"
+  source = "github.com/GammaBlaze/modules//services/webserver-cluster"
 
   cluster_name           = "webservers-prod"
   db_remote_state_bucket = "terraform-up-and-running-st8"
